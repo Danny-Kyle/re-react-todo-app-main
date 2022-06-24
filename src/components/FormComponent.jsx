@@ -1,9 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaTimes } from "react-icons/fa";
 import { useGlobalContext } from "../context";
+import Button from "./Button";
 
 export const FormComponent = ({ text, setText }) => {
-  const { tasks, updateTasks, showAllTasks } = useGlobalContext();
+  const { tasks, updateTasks } = useGlobalContext();
+  const [taskList, setTaskList] = useState(tasks)
+
+  useEffect(() => {
+    setTaskList(tasks)
+  }, [tasks])
 
   const checkKeyPressed = (e) => {
     if (e.keyCode === 13 && text) {
@@ -27,20 +33,22 @@ export const FormComponent = ({ text, setText }) => {
   };
 
   const clearAllTasks = () => {
-    updateTasks((tasks) => {
-      return tasks.filter((task) => task.isComplete === true);
-    });
+    updateTasks([]);
   };
 
   const showActiveTasks = () => {
     const activeTasks = tasks.filter((task) => task.status === false);
-    updateTasks(activeTasks, false);
+    setTaskList(activeTasks);
   };
 
   const showCompletedTasks = () => {
     const completedTask = tasks.filter((task) => task.status === true);
-    updateTasks(completedTask, false);
+    setTaskList(completedTask);
   };
+
+  const showAllTasks = () => {
+    setTaskList(tasks);
+  }
 
   function updateTask(taskID) {
     const isTaskIdValid = tasks.find((task) => task.id === taskID);
@@ -67,8 +75,8 @@ export const FormComponent = ({ text, setText }) => {
         onKeyDown={(e) => checkKeyPressed(e)}
       />
 
-      {tasks.length > 0
-        ? tasks.map((task) => (
+      {taskList.length > 0
+        ? taskList.map((task) => (
             <div
               className="flex justify-between cursor-pointer bg-slate-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border py-[10px] px-[20px]"
               key={task.id}
@@ -91,32 +99,12 @@ export const FormComponent = ({ text, setText }) => {
 
       <div className="flex bg-slate-50 dark:bg-gray-800 justify-between border px-4 font-medium tracking-wide text-lg text-gray-900 dark:text-gray-100 focus:outline-none focus:ring focus:ring-gray-900 focus:ring-opacity-80 rounded-md">
         <p>{tasks.length} Items Available</p>
-        <div className="justify-between space-x-16">
-          <button
-            className="hover:text-sky-700 active:text-sky-700"
-            onClick={showAllTasks}
-          >
-            All
-          </button>
-          <button
-            className="hover:text-sky-700 active:text-sky-700"
-            onClick={showActiveTasks}
-          >
-            Active
-          </button>
-          <button
-            className="hover:text-sky-700 active:text-sky-700"
-            onClick={showCompletedTasks}
-          >
-            Completed
-          </button>
+        <div className="w-2/3 justify-between space-x-16">
+          <Button label="All" onClick={showAllTasks} />
+          <Button label="Active" onClick={showActiveTasks}/>
+          <Button label="Completed" onClick={showCompletedTasks}/>
+          <Button label="Clear List" onClick={clearAllTasks}/>
         </div>
-        <button
-          className="hover:text-sky-700 active:text-sky-700"
-          onClick={clearAllTasks}
-        >
-          Clear List
-        </button>
       </div>
     </div>
   );

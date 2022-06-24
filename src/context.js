@@ -7,21 +7,13 @@ const AppProvider = ({ children }) => {
     return localData ? JSON.parse(localData) : [];
   });
 
-  const updateTasks = (taskList, updateLocalStorage = true) => {
+  const updateTasks = (taskList) => {
     setTasks(taskList);
-    if (updateLocalStorage) {
-      localStorage.setItem("tasks", JSON.stringify(taskList));
-    }
-  };
-
-  const showAllTasks = () => {
-    const localData = localStorage.getItem("tasks");
-    const JSONLocalData = localData ? JSON.parse(localData) : [];
-    setTasks(JSONLocalData);
+    localStorage.setItem("tasks", JSON.stringify(taskList));
   };
 
   return (
-    <AppContext.Provider value={{ tasks, updateTasks, showAllTasks }}>
+    <AppContext.Provider value={{ tasks, updateTasks }}>
       {children}
     </AppContext.Provider>
   );
